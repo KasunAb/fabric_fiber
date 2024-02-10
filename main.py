@@ -27,6 +27,10 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
+@app.route('/check-liveness', methods=['GET'])
+def check_liveness():
+    return jsonify({'status': 'alive'}), 200
+
 @app.route('/fabric', methods=['POST'])
 def predict_model1():
     if 'file' not in request.files:
