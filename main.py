@@ -23,7 +23,7 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
-@app.route('/predict_model1', methods=['POST'])
+@app.route('/fabric', methods=['POST'])
 def predict_model1():
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
@@ -44,7 +44,7 @@ def predict_model1():
         return jsonify(predictions)
 
 
-@app.route('/predict_model2', methods=['POST'])
+@app.route('/fiber', methods=['POST'])
 def predict_model2():
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
