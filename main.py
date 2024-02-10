@@ -9,13 +9,17 @@ app = Flask(__name__)
 # Load model 1
 fabric = get_resnet18(num_classes=27)  # Adjust num_classes as needed
 checkpoint1 = torch.load('model/fabric.pth', map_location='cpu')
-fabric.load_state_dict(checkpoint1['model'])
+# Adjust keys for model 1
+fabric_state_dict = {key.replace('module.', ''): value for key, value in checkpoint1['model'].items()}
+fabric.load_state_dict(fabric_state_dict)
 fabric.eval()
 
 # Load model 2
-fibre = get_resnet18(num_classes=27)  # Adjust num_classes as needed
-checkpoint1 = torch.load('model/fiber.pth', map_location='cpu')
-fibre.load_state_dict(checkpoint1['model'])
+fibre = get_resnet18(num_classes=33)  # Adjust num_classes as needed
+checkpoint2 = torch.load('model/fiber.pth', map_location='cpu')
+# Adjust keys for model 2
+fibre_state_dict = {key.replace('module.', ''): value for key, value in checkpoint2['model'].items()}
+fibre.load_state_dict(fibre_state_dict)
 fibre.eval()
 
 transform = transforms.Compose([
