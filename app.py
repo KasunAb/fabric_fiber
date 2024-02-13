@@ -29,12 +29,15 @@ transform = transforms.Compose([
 
 @app.route('/check-liveness', methods=['GET'])
 def check_liveness():
+    print('liveness check request')
     return jsonify({'status': 'alive'}), 200
 
 @app.route('/fabric', methods=['POST'])
 def predict_model1():
+    print('fabric request')
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
+    print("got file")
     file = request.files['file']
     image = Image.open(file.stream).convert('RGB')
     image = transform(image).unsqueeze(0)
@@ -54,8 +57,10 @@ def predict_model1():
 
 @app.route('/fiber', methods=['POST'])
 def predict_model2():
+    print('fiber request')
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
+    print("got file")
     file = request.files['file']
     image = Image.open(file.stream).convert('RGB')
     image = transform(image).unsqueeze(0)
