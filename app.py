@@ -3,6 +3,11 @@ import torch
 from torchvision import transforms
 from PIL import Image
 from resnet_model import get_resnet18  # Adjust the import path as necessary
+import numpy as np
+import torchvision.transforms as transforms
+from PIL import Image
+
+from fashion_mnist_model import FashionMNISTModel, preprocess_image_with_thresholding
 
 app = Flask(__name__)
 
@@ -22,10 +27,16 @@ fibre_state_dict = {key.replace('module.', ''): value for key, value in checkpoi
 fibre.load_state_dict(fibre_state_dict)
 fibre.eval()
 
+model_path = 'model/fashion_mnist_cnn_model.pth'  
+model = FashionMNISTModel(1, 10, 10)  
+model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+model.eval()
+
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
 ])
+
 
 @app.route('/check-liveness', methods=['GET'])
 def check_liveness():
@@ -76,6 +87,26 @@ def predict_model2():
             })
 
         return jsonify(predictions)
+
+@app.route('/fashion', methods=['POST'])
+def predict_fashion():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    file = request.files['file']
+    
+    class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+    
+    # Assuming the preprocess_image_with_thresholding function returns the preprocessed image tensor
+    _, image_tensor = preprocess_image_with_thresholding(file)
+    
+    # Predict the class of the fashion item
+    with torch.no_grad():
+        outputs = model(image_tensor)
+        _, predicted = torch.max(outputs, 1)
+        class_id = predicted.item()
+        class_name = class_names[class_id]
+        return jsonify({'class_name': class_name})
+
 
 
 # if __name__ == '__main__':
